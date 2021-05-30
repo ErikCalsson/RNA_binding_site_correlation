@@ -69,7 +69,7 @@ if len(list_unique) > 10000:  # <- caps RAM at around 4 GB usage
 
 # create k-mer counts matrix filled with 0's
 #count_matrix = [[0 for i in range(len(list_unique))] for j in range(len(list_unique))]
-count_matrix = [[0 for i in range(work_len)] for j in range(work_len)]
+count_matrix = [[0.0 for i in range(work_len)] for j in range(work_len)]
 
 
 # filling the matrix
