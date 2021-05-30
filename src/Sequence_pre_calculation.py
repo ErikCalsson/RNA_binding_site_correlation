@@ -7,10 +7,12 @@ import src.argument_parser as pars
 # BedTools .getfasta for extracting sequence
 # https://bedtools.readthedocs.io/en/latest/content/tools/getfasta.html
 seq_one = file.bed_one.getfasta(fi=file.ref_fasta, s=True, bedOut=True, fo="seqOne.fa.out")
-seq_two = file.bed_two.getfasta(fi=file.ref_fasta, s=True)
+seq_two = file.bed_two.getfasta(fi=file.ref_fasta, s=True, bedOut=True, fo="seqTwo.fa.out")
 
 # concat seq_one and seq_two to seq_three
 seq_three = seq_one + seq_two
+
+print(seq_two[0])
 
 # k-mer Lists calculation
 
