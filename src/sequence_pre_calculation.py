@@ -6,13 +6,13 @@ import src.argument_parser as pars
 
 # BedTools .getfasta for extracting sequence
 # https://bedtools.readthedocs.io/en/latest/content/tools/getfasta.html
-seq_one = file.bed_one.getfasta(fi=file.ref_fasta, s=True, bedOut=True, fo="seqOne.fa.out")
-seq_two = file.bed_two.getfasta(fi=file.ref_fasta, s=True, bedOut=True, fo="seqTwo.fa.out")
+seq_one = file.bed_one.getfasta(fi=file.ref_fasta, s=True, bedOut=True, fo="firstSeq.fa.out")
+seq_two = file.bed_two.getfasta(fi=file.ref_fasta, s=True, bedOut=True, fo="secondSeq.fa.out")
 
 # save getfasta output to local variable
-with open("seqOne.fa.out", "r") as in_file:
+with open("firstSeq.fa.out", "r") as in_file:
     seq_one = in_file.readlines()
-with open("seqTwo.fa.out", "r") as in_file:
+with open("secondSeq.fa.out", "r") as in_file:
     seq_two = in_file.readlines()
 
 
