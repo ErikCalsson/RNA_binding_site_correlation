@@ -3,7 +3,7 @@ import pybedtools
 from pathlib import Path
 
 # imports intern
-import src.argument_parser as arg
+import argument_parser as arg
 
 # opening BED file or file from path
 # ['chrom', 'chromStart', 'chromEnd', 'name', 'score', 'strand'] for access: cromEnd = end, chromStart = start !!!!!!

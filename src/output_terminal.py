@@ -1,7 +1,7 @@
 # imports extern
 
 # imports intern
-import  src.sequence_pre_calculation as calc
+import  sequence_pre_calculation as calc
 
 
 
