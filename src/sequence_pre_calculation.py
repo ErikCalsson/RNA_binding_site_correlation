@@ -160,8 +160,11 @@ while pointerA < len(list_unique_one) and pointerB < len(list_unique_two):
         pointerB += 1
     for elem_x in range(pointerA, pointerB):
         for elem_y in range(pointerA, pointerB):
-            count_list_one[list_unique_one[elem_x][1]] += 1
-            count_list_two[list_unique_two[elem_y][1]] += 1
+            # only compare sub_seq of similar length. Here shorter at least 80% of longer one
+            # TODO length similarity as input variable ?
+            if len(elem_x[0]) >= len(elem_y[0]) * 0.8 or len(elem_y[0]) >= len(elem_x[0]) * 0.8:
+                count_list_one[list_unique_one[elem_x][1]] += 1
+                count_list_two[list_unique_two[elem_y][1]] += 1
             # or for count_list each
     pointerA = pointerB
     pointerB = pointerA + 1
