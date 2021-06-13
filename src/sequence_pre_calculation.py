@@ -1,4 +1,5 @@
 # imports extern
+import numpy as np
 
 # imports intern
 #import src.file_reader as file
@@ -78,8 +79,6 @@ list_unique = list_unique_one
 list_unique.extend(list_unique_two)
 
 
-# TODO if sub_seq count to big, RAM usage at 100% for Laptop
-# empty now unused variables -> saving a little RAM
 work_len = len(seq_three)
 #print(work_len)
 #if len(seq_three) > 10000:  # <- caps RAM at around 4 GB usage
@@ -144,53 +143,88 @@ pointerB = pointerA + 1
 #            count_matrix[col][row] = 0
 
 
-# comparing each element of one dataset against the average of the other
 
-
-# counts of occurrences of kmers and similarity
-# count_list = [0 for i in range(len(list_unique))]
-count_list_one = [0 for i in range(len(seq_one))]
-sim_list_one = count_list_one.copy()
-count_list_two = [0 for i in range(len(seq_two))]
-sim_list_two = count_list_two.copy()
-
+dict_SD = dict()
 
 while pointerA < len(list_unique_one) and pointerB < len(list_unique_two):
     while pointerB < len(list_unique_two) and list_unique_one[pointerA][0] == list_unique_two[pointerB][0]:
         pointerB += 1
     for elem_x in range(pointerA, pointerB):
         for elem_y in range(pointerA, pointerB):
-            # only compare sub_seq of similar length. Here shorter at least 80% of longer one
+            # only compare sub_seq of similar length. Here shorter at least 80% of longer one in log 2
             # TODO length similarity as input variable ?
-            if len(elem_x[0]) >= len(elem_y[0]) * 0.8 or len(elem_y[0]) >= len(elem_x[0]) * 0.8:
-                count_list_one[list_unique_one[elem_x][1]] += 1
-                count_list_two[list_unique_two[elem_y][1]] += 1
+            #if np.math.log(len(elem_x[0])) >= np.math.log(len(elem_y[0]) * 0.8)\
+            #        or np.math.log(len(elem_y[0])) >= np.math.log(len(elem_x[0]) * 0.8):
+            if len(list_unique_one[elem_x][0]) >= len(list_unique_one[elem_y][0]) * 0.8 \
+                    or len(list_unique_one[elem_y][0]) >= len(list_unique_one[elem_x][0]) * 0.8:
+                key_part_one = str(list_unique_one[elem_x][1])
+                key_part_two = "-"
+                key_part_three = str(list_unique_two[elem_y][1])
+                dict_key = key_part_one + key_part_two + key_part_three
+                if dict_key in dict_SD:
+                    dict_SD[dict_key] = (dict_SD.get(dict_key) + 1)
+                else:
+                    dict_SD.__setitem__(dict_key, 1)
+
             # or for count_list each
     pointerA = pointerB
     pointerB = pointerA + 1
 
+for key in dict_SD:
+    dex = key.split("-")
+    first_dex = int(dex[0])
+    second_dex = int(dex[1])
+    SD = (200 * dict_SD[key]) /\
+         ((len(seq_one[first_dex]) - ksize + 1 ) + len(seq_two[second_dex]) - ksize + 1)
+    dict_SD[key] = SD
+
+
+# comparing each element of one dataset against the average of the other
+
+# counts of occurrences of kmers and similarity
+# count_list = [0 for i in range(len(list_unique))]
+#count_list_one = [0 for i in range(len(seq_one))]
+#sim_list_one = count_list_one.copy()
+#count_list_two = [0 for i in range(len(seq_two))]
+#sim_list_two = count_list_two.copy()
+
+
+#while pointerA < len(list_unique_one) and pointerB < len(list_unique_two):
+#    while pointerB < len(list_unique_two) and list_unique_one[pointerA][0] == list_unique_two[pointerB][0]:
+#        pointerB += 1
+#    for elem_x in range(pointerA, pointerB):
+#        for elem_y in range(pointerA, pointerB):
+#            # only compare sub_seq of similar length. Here shorter at least 80% of longer one
+#            # TODO length similarity as input variable ?
+#            if len(list_unique_one[elem_x][0]) >= len(elem_y[0]) * 0.8 or len(elem_y[0]) >= len(elem_x[0]) * 0.8:
+#                count_list_one[list_unique_one[elem_x][1]] += 1
+#                count_list_two[list_unique_two[elem_y][1]] += 1
+#            # or for count_list each
+#    pointerA = pointerB
+#    pointerB = pointerA + 1
+
 
 # average value
-Kj_avg = 0
-Ki_avg = 0
-for row in range(0, len(count_list_two)):
-    Kj_avg += (len(seq_two[row]) / len(count_list_two)) - ksize + 1
+#Kj_avg = 0
+#Ki_avg = 0
+#for row in range(0, len(count_list_two)):
+#    Kj_avg += (len(seq_two[row]) / len(count_list_two)) - ksize + 1
+#
+#for col in range(0, len(count_list_one)):
+#    Ki = len(seq_one[col]) - ksize + 1
+#    Ki_avg += Ki
+#    # use Sorensen-Dice similarity index
+#    if Ki + Kj_avg != 0:
+#        sim_list_one[col] = (200 * count_list_one[col])/(Ki + Kj_avg)
+#    else:
+#        sim_list_one[col] = 0
 
-for col in range(0, len(count_list_one)):
-    Ki = len(seq_one[col]) - ksize + 1
-    Ki_avg += Ki
-    # use Sorensen-Dice similarity index
-    if Ki + Kj_avg != 0:
-        sim_list_one[col] = (200 * count_list_one[col])/(Ki + Kj_avg)
-    else:
-        sim_list_one[col] = 0
-
-for row in range(0, len(count_list_two)):
-    Kj = len(seq_two[row]) - ksize + 1
-    if Ki_avg + Kj != 0:
-        sim_list_two[row] = (200 * count_list_two[row])/(Ki_avg + Kj)
-    else:
-        sim_list_two[row] = 0
+#for row in range(0, len(count_list_two)):
+#    Kj = len(seq_two[row]) - ksize + 1
+#    if Ki_avg + Kj != 0:
+#        sim_list_two[row] = (200 * count_list_two[row])/(Ki_avg + Kj)
+#    else:
+#        sim_list_two[row] = 0
 
 # TODO empty list for RAM saving ?
 count_list_one = []
