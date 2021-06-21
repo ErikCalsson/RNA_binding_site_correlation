@@ -148,10 +148,17 @@ sumSD = 0
 zal = 0
 wrong = 0
 
+maxA = 0
+maxB = 0
+
 for key in dict_SD:
     dex = key.split("-")
     first_dex = int(dex[0])
+    if first_dex > maxA:
+        maxA = first_dex
     second_dex = int(dex[1])
+    if second_dex > maxB:
+        maxB = second_dex
     SD = (200 * dict_SD[key]) / ((len(seq_one[first_dex]) - ksize + 1) + (len(seq_two[second_dex]) - ksize + 1))
     #SD = (200 * dict_SD[key]) / ((len(seq_three[first_dex]) - ksize + 1) + (len(seq_three[second_dex]) - ksize + 1))
     dict_SD[key] = SD
@@ -184,6 +191,25 @@ print(">90", v90)
 print("avg: ", sumSD/zal)
 print("wrong: ", wrong)
 
+
+# "transform dict to 2D array for PCA"
+# TODO look into: skip dict and direct into SD_matrix
+print("Range ", maxA, " x ", maxA)
+SD_matrix = []
+SD_row = []
+#Initialize the column.
+for j in range(0, maxB):
+    SD_row.append(0.0)
+#Append the column to each row.
+for i in range(0, maxA):
+    SD_matrix.append(SD_row)
+
+
+for key in dict_SD:
+    dex = key.split("-")
+    first_dex = int(dex[0])
+    second_dex = int(dex[1])
+    SD_matrix[first_dex - 1][second_dex - 1] = dict_SD[key]
 
 # TODO empty list for RAM saving ?
 #count_list_one = []
