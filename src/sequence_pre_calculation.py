@@ -88,29 +88,42 @@ list_unique_one.sort(key=lambda a: a[0])
 list_unique_two.sort(key=lambda a: a[0])
 
 
+# foreach element in second dataset
 pointerA = 0
 pointerB = pointerA + 1
+# foreach element in first dataset
+pointerC = 0
 
 dict_SD = dict()
-while pointerA < len(list_unique_one) and pointerB < len(list_unique_two):
+while pointerC < len(list_unique_one) and pointerB < len(list_unique_two) and pointerA < len(list_unique_two):
 #while pointerA < len(list_unique) and pointerB < len(list_unique):
-    while pointerB < len(list_unique_two) and list_unique_one[pointerA][0] == list_unique_two[pointerB][0]:
+    while pointerB < len(list_unique_two) and list_unique_one[pointerC][0] == list_unique_two[pointerB][0]:
+    #while pointerB < len(list_unique_two) and list_unique_one[pointerA][0] == list_unique_two[pointerB][0]:
     #while pointerB < len(list_unique) and list_unique[pointerA][0] == list_unique[pointerB][0]:
         pointerB += 1
-    for elem_x in range(pointerA, pointerB):
-        for elem_y in range(pointerA, pointerB):
+# for elem_x in range(0, len(list_unique_one)):
+    # for elem_y in range(0, len(list_unique_two)):
+    #for elem_x in range(pointerA, pointerB):
+    for elem_y in range(pointerA, pointerB):
             # only compare sub_seq of similar length. Here shorter at least 80% of longer one in log 2
             # TODO length similarity as input variable ?
             #if np.math.log(len(seq_three[list_unique[elem_x][1]])) >= np.math.log(
             #        len(seq_three[list_unique[elem_y][1]]) * 0.8) \
             #        or np.math.log(len(seq_three[list_unique[elem_y][1]])) >= np.math.log(
             #    len(seq_three[list_unique[elem_x][1]]) * 0.8):
-            if np.math.log(len(seq_one[list_unique_one[elem_x][1]])) >= np.math.log(
-                    len(seq_two[list_unique_two[elem_y][1]]) * 0.8) \
-                    or np.math.log(len(seq_two[list_unique_two[elem_y][1]])) >= np.math.log(
-                    len(seq_one[list_unique_one[elem_x][1]]) * 0.8):
 
-                key_part_one = str(list_unique_one[elem_x][1])
+            #if np.math.log(len(seq_one[list_unique_one[elem_x][1]])) >= np.math.log(
+            #    len(seq_two[list_unique_two[elem_y][1]]) * 0.8) \
+            #    or np.math.log(len(seq_two[list_unique_two[elem_y][1]])) >= np.math.log(
+            #    len(seq_one[list_unique_one[elem_x][1]]) * 0.8):
+            if np.math.log(len(seq_one[list_unique_one[pointerC][1]])) >= np.math.log(
+                len(seq_two[list_unique_two[elem_y][1]]) * 0.8) \
+                or np.math.log(len(seq_two[list_unique_two[elem_y][1]])) >= np.math.log(
+                np.math.log(len(seq_one[list_unique_one[pointerC][1]]))):
+            # if (elem_x[0] == elem_y[0]):
+
+                # key_part_one = str(list_unique_one[elem_x][1])
+                key_part_one = str(list_unique_one[pointerC][1])
                 #key_part_one = str(list_unique[elem_x][1])
                 key_part_two = "-"
                 key_part_three = str(list_unique_two[elem_y][1])
@@ -122,9 +135,10 @@ while pointerA < len(list_unique_one) and pointerB < len(list_unique_two):
                     dict_SD.update({dict_key: 1})
     pointerA = pointerB
     pointerB = pointerA + 1
+    pointerC += 1
 
 v50 = 0
-v60 =0
+v60 = 0
 v70 = 0
 v80 = 0
 v90 = 0
@@ -144,7 +158,7 @@ for key in dict_SD:
     sumSD += SD
     zal += 1
     if SD > 100:
-        wrong+= 1
+        wrong += 1
     if SD < 50:
         less50 += 1
     elif SD >= 50:
