@@ -119,6 +119,10 @@ wrong = 0
 maxA = 0
 maxB = 0
 
+# dicts for best entries from each row or column
+dict_best_one = dict()
+dict_best_two = dict()
+
 for key in dict_SD:
     dex = key.split("-")
     first_dex = int(dex[0])
@@ -129,6 +133,19 @@ for key in dict_SD:
         maxB = second_dex
     SD = (200 * dict_SD[key]) / ((len(seq_one[first_dex]) - ksize + 1) + (len(seq_two[second_dex]) - ksize + 1))
     dict_SD[key] = SD
+
+    # add best SD values for each row or col
+    if first_dex in dict_best_one.keys():
+        if dict_best_one[first_dex] < SD:
+            dict_best_one[first_dex] = SD
+    else:
+        dict_best_one.update({first_dex: SD})
+    if second_dex in dict_best_two.keys():
+        if dict_best_two[second_dex] < SD:
+            dict_best_two[second_dex] = SD
+    else:
+        dict_best_two.update({second_dex: SD})
+
     sumSD += SD
     zal += 1
     if SD > 100:
@@ -161,7 +178,7 @@ print("wrong: ", wrong)
 
 # "transform dict to 2D array for PCA"
 # TODO look into: skip dict and direct into SD_matrix
-print("Range ", maxA, " x ", maxA)
+print("Range ", maxA, " x ", maxB)
 SD_matrix = []
 SD_row = []
 
