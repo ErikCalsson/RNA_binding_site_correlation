@@ -1,5 +1,4 @@
 # imports extern
-import matplotlib
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -15,77 +14,58 @@ from sklearn.metrics import mean_squared_error
 # imports intern
 import sequence_pre_calculation as pre_calc
 
+# add dict values for best row and column value to data_frame
+#pd_first_values = pd.DataFrame(
+#    [pre_calc.dict_best_one[elem]] for elem in pre_calc.dict_best_one
+#)
+#pd_first_values.columns = ["first values"]
+#pd_second_values = pd.DataFrame(
+#    [pre_calc.dict_best_two[elem]] for elem in pre_calc.dict_best_two
+#)
+#pd_second_values.columns = ["second values"]
+
 # TODO
 # 1. PCA = Principal Components Analysis
 
-# projecting n-dimensional matrix to 2D
-#pca_SD_values = PCA(n_components=2)
-#pca_matrix_values = pca_SD_values.fit_transform(pre_calc.SD_matrix)
-
-#PCA_Df = pd.DataFrame(data=pca_matrix_values,
-#                      columns=['pca 1', 'pca 2'])
-
-#print('pca variation: {}'.format(pca_SD_values.explained_variance_ratio_))
-
-# plot results for visualization
-#plt.figure()
-#plt.figure(figsize=(10, 10))
-#plt.xticks(fontsize=12)
-#plt.yticks(fontsize=14)
-#plt.xlabel('pca comp 1', fontsize=20)
-#plt.ylabel('pca comp 2', fontsize=20)
-#plt.title("PCA of both datasets", fontsize=20)
-
-
-# add dict values for best row and column value to data_frame
-pd_first_values = pd.DataFrame(
-    [pre_calc.dict_best_one[elem]] for elem in pre_calc.dict_best_one
-)
-pd_first_values.columns = ["first values"]
-pd_second_values = pd.DataFrame(
-    [pre_calc.dict_best_two[elem]] for elem in pre_calc.dict_best_two
-)
-pd_second_values.columns = ["second values"]
-
-
-#print("converted to df")
-#print(pd_first_values.head())
-#print("second")
-#print(pd_second_values.head())
-
-
-pca_dataset = pd.concat([pd_first_values, pd_second_values], axis=1, join='inner')
-#pd.DataFrame(columns=["first values", "second values"])
-
-#print("made df")
-#print(pca_dataset.head())
-
-
+#pre_calc.kmer_matrix
 
 # TODO perform PCA from here on
 # https://www.datacamp.com/community/tutorials/principal-component-analysis-in-python
 # normalize values
-#x = pca_dataset.loc[:, features].values
-#x = StandardScaler().fit_transform(x) # normalizing the features
-#x = StandardScaler().fit_transform(pca_dataset)  # normalizing the features
-#x = [float(i)/max(pca_dataset[i][0]) for i in pca_dataset]
-x = []
-#normalized_values = pd.DataFrame(x)
-for elem in range(0, len(pca_dataset)):
-    #x.append([elem[0]/100, elem[1]])
-    x.append(pca_dataset[elem]/100)
+x = StandardScaler().fit_transform(pre_calc.kmer_matrix)
 
+seq_cols = [pre_calc.kmer_list[i] for i in range(x.shape[1])]
+normalised_kmers = pd.DataFrame(x, columns=seq_cols)
+normalised_kmers = normalised_kmers.assign(label=['seq_one', 'seq_two'])
+print(normalised_kmers.tail())
 
-pca_values = PCA(n_components=2)
-# reshape single feature array
-#x = np.array reshape(x, (-1, 1))
-x = np.array(x).reshape(int(len(x)/2), 2)
-print(x.shape)
-principalComponents_values = pca_values.fit_transform(x)
+pca_kmers = PCA(n_components=2)
+principalComponents_kmers = pca_kmers.fit_transform(x)
+print(principalComponents_kmers)
 
-principal_values_Df = pd.DataFrame(data=principalComponents_values[0],
-                                   columns=['principal component 1', 'principal component 2'])
-print(principal_values_Df.tail())
+# create a DataFrame for PCA values
+principal_kmers_Df = pd.DataFrame(data=principalComponents_kmers
+             ,columns=['principal component 1', 'principal component 2'])
 
+# make figure
+fig = plt.figure()
+plt.figure(figsize=(10, 10))
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=14)
+plt.xlabel('Principal Component - 1', fontsize=20)
+plt.ylabel('Principal Component - 2', fontsize=20)
+plt.title("Principal Component Analysis of kmer counts", fontsize=20)
+targets = ['seq_one', 'seq_two']
+#targets = [principalComponents_kmers[0], principalComponents_kmers[1]]
+colors = ['r', 'g']
+for target, color in zip(targets, colors):
+    indicesToKeep = normalised_kmers['label'] == target
+    plt.scatter(principal_kmers_Df.loc[indicesToKeep, 'principal component 1']
+               , principal_kmers_Df.loc[indicesToKeep, 'principal component 2'], c=color, s=50)
+
+plt.legend(targets, prop={'size': 15})
+
+# TODO output figure
+fig.savefig('plot.png')
 
 print("end")
