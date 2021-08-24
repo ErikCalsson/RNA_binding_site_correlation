@@ -1,6 +1,5 @@
 # imports extern
 import itertools
-
 import numpy as np
 
 # imports intern
@@ -107,21 +106,27 @@ while pointerC < len(list_unique_one) and pointerB < len(list_unique_two) and po
     pointerB = pointerA + 1
     pointerC += 1
 
-v50 = 0
-v60 = 0
-v70 = 0
-v80 = 0
-v90 = 0
-less50 = 0
-more50 = 0
-sumSD = 0
-zal = 0
-wrong = 0
+#v50 = 0
+#v60 = 0
+#v70 = 0
+#v80 = 0
+#v90 = 0
+#less50 = 0
+#more50 = 0
+#sumSD = 0
+#zal = 0
+#wrong = 0
 
 
 # dicts for best entries from each row or column
 dict_best_one = dict()
 dict_best_two = dict()
+dict_over80_one = dict()
+dict_over90_one = dict()
+dict_over95_one = dict()
+dict_over80_two = dict()
+dict_over90_two = dict()
+dict_over95_two = dict()
 
 for key in dict_SD:
     dex = key.split("-")
@@ -136,40 +141,59 @@ for key in dict_SD:
             dict_best_one[first_dex] = SD
     else:
         dict_best_one.update({first_dex: SD})
+        dict_over80_one.update({first_dex: 0})
+        dict_over90_one.update({first_dex: 0})
+        dict_over95_one.update({first_dex: 0})
+    if SD >= 95:
+        dict_over95_one[first_dex] += 1
+    elif SD >= 90:
+        dict_over90_one[first_dex] += 1
+    elif SD >= 80:
+        dict_over80_one[first_dex] += 1
+
     if second_dex in dict_best_two.keys():
         if dict_best_two[second_dex] < SD:
             dict_best_two[second_dex] = SD
     else:
         dict_best_two.update({second_dex: SD})
+        dict_over80_two.update({first_dex: 0})
+        dict_over90_two.update({first_dex: 0})
+        dict_over95_two.update({first_dex: 0})
+    if SD >= 95:
+        dict_over95_two[second_dex] += 1
+    elif SD >= 90:
+        dict_over90_two[second_dex] += 1
+    elif SD >= 80:
+        dict_over80_two[second_dex] += 1
 
-    sumSD += SD
-    zal += 1
-    if SD > 100:
-        wrong += 1
-    if SD < 50:
-        less50 += 1
-    elif SD >= 50:
-        more50 += 1
-        if SD <= 90:
-            v80 += 1
-        elif SD <= 100:
-            v90 += 1
-        elif SD <= 80:
-            v70 += 1
-        elif SD <= 70:
-            v60 += 1
-        elif SD <= 60:
-            v50 += 1
-print("counts")
-print("less50", less50)
-print("more50", more50)
-print(">50", v50)
-print(">60", v60)
-print(">70", v70)
-print(">80", v80)
-print(">90", v90)
-print("avg: ", sumSD/zal)
-print("wrong: ", wrong)
+    #sumSD += SD
+    #zal += 1
+    #if SD > 100:
+    #    wrong += 1
+    #if SD < 50:
+    #    less50 += 1
+    #elif SD >= 50:
+    #    more50 += 1
+    #    if SD <= 90:
+    #        v80 += 1
+    #    elif SD <= 100:
+    #        v90 += 1
+    #    elif SD <= 80:
+    #        v70 += 1
+    #    elif SD <= 70:
+    #        v60 += 1
+    #    elif SD <= 60:
+    #        v50 += 1
+#print("counts")
+#print("less50", less50)
+#print("more50", more50)
+#print(">50", v50)
+#print(">60", v60)
+#print(">70", v70)
+#print(">80", v80)
+#print(">90", v90)
+#print("avg: ", sumSD/zal)
+#print("wrong: ", wrong)
 
 
 # TODO empty list for RAM saving ?
@@ -191,6 +215,24 @@ for i in range(1, k + 1):
 # dict statt matrix
 # extra spalte damit usprungs sequ bekannt bleibt
 # => df hat
+
+# count k-mer occurrences in each sequence for each subsequence
+list_all_kmer_counts = np.zeros(((len(seq_one) + len(seq_two)), len(kmer_list)), int)
+row_number = 0
+col_number = 0
+for subseq in seq_one:
+    col_number = 0
+    for kmer in kmer_list:
+        list_all_kmer_counts[row_number][col_number] = subseq.count(kmer)
+        col_number += 1
+    row_number += 1
+for subseq in seq_two:
+    col_number = 0
+    for kmer in kmer_list:
+        list_all_kmer_counts[row_number][col_number] = subseq.count(kmer)
+        col_number += 1
+    row_number += 1
+
 
 # count k-mer occurrences in each sequence
 col_count = 0
