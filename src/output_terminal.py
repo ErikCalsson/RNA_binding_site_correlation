@@ -3,6 +3,7 @@
 # imports intern
 import sequence_pre_calculation as calc
 import graph_creation as graph
+import data_calculation as dat
 
 
 
