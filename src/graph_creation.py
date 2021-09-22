@@ -10,25 +10,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
+from matplotlib import pyplot
 
 # imports intern
 import sequence_pre_calculation as pre_calc
 
-# add dict values for best row and column value to data_frame
-#pd_first_values = pd.DataFrame(
-#    [pre_calc.dict_best_one[elem]] for elem in pre_calc.dict_best_one
-#)
-#pd_first_values.columns = ["first values"]
-#pd_second_values = pd.DataFrame(
-#    [pre_calc.dict_best_two[elem]] for elem in pre_calc.dict_best_two
-#)
-#pd_second_values.columns = ["second values"]
-
-# TODO
-# 1. PCA = Principal Components Analysis
-
-
-#pre_calc.kmer_matrix
+# pre_calc.kmer_matrix
 kmer_dataset = pd.DataFrame(pre_calc.list_all_kmer_counts)
 
 # https://towardsdatascience.com/pca-using-python-scikit-learn-e653f8989e60
@@ -39,7 +26,6 @@ for i in range(0, kmer_dataset.shape[1]):
     features.append(i)
 
 x = kmer_dataset.loc[:, features].values
-
 
 # add column with data origin
 origin_of_seq = []
@@ -59,7 +45,11 @@ principalDf = pd.DataFrame(data=principalComponents,
 
 finalDf = pd.concat([principalDf, kmer_dataset[['target']]], axis=1)
 
-fig = plt.figure(figsize=(8, 8))
+print("________________________")
+print(finalDf.head())
+print("________________________")
+
+fig = plt.figure(figsize=(12, 12))
 ax = fig.add_subplot(1, 1, 1)
 ax.set_xlabel('Principal Component 1', fontsize=15)
 ax.set_ylabel('Principal Component 2', fontsize=15)
@@ -71,66 +61,182 @@ for target, color in zip(targets, colors):
     ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
                , finalDf.loc[indicesToKeep, 'principal component 2']
                , c=color
-               , s=50)
+               , s=10
+               , alpha=0.2)
 ax.legend(targets)
 ax.grid()
 
 fig.savefig('plot.png')
 
+fig = plt.figure(figsize=(12, 12))
+ax = fig.add_subplot(1, 1, 1)
+ax.set_xlabel('Principal Component 1', fontsize=15)
+ax.set_ylabel('Principal Component 2', fontsize=15)
+ax.set_title('2 component PCA', fontsize=20)
+targets = ['seq_one']
+colors = ['r']
+for target, color in zip(targets, colors):
+    indicesToKeep = finalDf['target'] == target
+    ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
+               , finalDf.loc[indicesToKeep, 'principal component 2']
+               , c=color
+               , s=10
+               , alpha=0.2)
+ax.legend(targets)
+ax.grid()
+fig.savefig('plot_seq_one.png')
 
-#print("first________________________________")
-#print(kmer_dataset.head())
-#print("________________________________")
-#print(kmer_dataset.tail())
-#print("first________________________________")
+fig = plt.figure(figsize=(12, 12))
+ax = fig.add_subplot(1, 1, 1)
+ax.set_xlabel('Principal Component 1', fontsize=15)
+ax.set_ylabel('Principal Component 2', fontsize=15)
+ax.set_title('2 component PCA', fontsize=20)
+targets = ['seq_two']
+colors = ['b']
+for target, color in zip(targets, colors):
+    indicesToKeep = finalDf['target'] == target
+    ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
+               , finalDf.loc[indicesToKeep, 'principal component 2']
+               , c=color
+               , s=10
+               , alpha=0.2)
+ax.legend(targets)
+ax.grid()
+fig.savefig('plot_seq_two.png')
+
+
+# making histogram for PCA values values
+bins = np.linspace(-10, 10, 100)
+
+fig, ax = pyplot.subplots()
+#indicesToKeep = finalDf['target'] == ['seq_one']
+#pyplot.hist(finalDf.loc[indicesToKeep, 'principal component 2'], bins, alpha=0.1, label='pca_2')
+pyplot.hist(finalDf['principal component 1'], bins, color='red', alpha=0.1, label='pca_1')
+#targets = ['seq_two']
+#indicesToKeep = finalDf['target'] == ['seq_two']
+#pyplot.hist(finalDf.loc[indicesToKeep, 'principal component 2'], bins, alpha=0.1, label='pca_2')
+pyplot.hist(finalDf['principal component 2'], bins, color='blue', alpha=0.1, label='pca_2')
+pyplot.legend(loc='upper right')
+fig.savefig('hist_PCA_values.png')
+
+
+# making histogram for SD values values
+#pre_calc.dict_SD
+#fig, ax_SD = plt.subplots()
+#plt.hist(list(pre_calc.dict_SD.keys()),  [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], edgecolor='black')
+#fig.savefig('hist_SD_values.png')
+
+
+
+
+
+# combining points when +- 5% similarity
+#https://stackoverflow.com/questions/59490101/combine-near-scatter-points-into-one-and-increase-its-size
+
+#groupedDf = pd.DataFrame()
+
+# similarity range
+#sim_range = 5
+
+#max_len = finalDf.shape[0]
+#outer_indices = 1
+#inner_indices = 2
+#containing = 0
+
+#entry = finalDf.loc[0]
+#groupedDf = groupedDf.append([entry])
+
+#for outer_indices, outer_row in finalDf.iterrows():
+#    max_border1 = outer_row[0] + sim_range * outer_row[0] / 100
+#    min_border1 = outer_row[0] - sim_range * outer_row[0] / 100
+#    max_border2 = outer_row[1] + sim_range * outer_row[1] / 100
+#    min_border2 = outer_row[1] - sim_range * outer_row[1] / 100
+#    for inner_indices, inner_row in groupedDf.iterrows():
+#        if outer_row[2] == inner_row[2]:
+#            if min_border1 < inner_row[0] < max_border1 and min_border2 < inner_row[1] < max_border2:
+#                containing = 1
+
+
+                #entry = finalDf.loc[outer_indices]
+                #groupedDf = groupedDf.append([entry])
+
+                #groupedDf = groupedDf.append(finalDf.iloc[[outer_indices]])
+                #groupedDf = groupedDf.append(finalDf.iloc[outer_row])
+
+#    if containing != 1:
+#        entry = finalDf.loc[outer_indices]
+#        groupedDf = groupedDf.append([entry])
 #
-# TODO perform PCA from here on
-# https://www.datacamp.com/community/tutorials/principal-component-analysis-in-python
-## normalize values
-##x = StandardScaler().fit_transform(pre_calc.kmer_matrix)
-#x = StandardScaler().fit_transform(pre_calc.list_all_kmer_counts)
+#    containing = 0
+
+
+#while outer_indices < max_len:
+#    max_border1 = groupedDf.iat[outer_indices, 0] + sim_range * groupedDf.iat[outer_indices, 0] / 100
+#    max_border2 = groupedDf.iat[outer_indices, 1] - sim_range * groupedDf.iat[outer_indices, 1] / 100
+#    min_border1 = groupedDf.iat[outer_indices, 0] + sim_range * groupedDf.iat[outer_indices, 0] / 100
+#    min_border2 = groupedDf.iat[outer_indices, 1] - sim_range * groupedDf.iat[outer_indices, 1] / 100
+#    while inner_indices < max_len:
+#        if groupedDf.iat[outer_indices, 2] == groupedDf.iat[inner_indices, 2]:
+#            if min_border1 < groupedDf.iat[inner_indices, 0] < max_border1 and\
+#                    min_border2 < groupedDf.iat[inner_indices, 1] < max_border2:
+#                groupedDf = groupedDf.drop(groupedDf.index[[inner_indices]])
+#                max_len -= 1
+#        else:
+#            inner_indices += 1
+#    outer_indices += 1
+
+#for outer_indices, outer_row in groupedDf.iterrows():
+#    max_border1 = outer_row[0] + sim_range * outer_row[0] / 100
+#    max_border2 = outer_row[1] - sim_range * outer_row[1] / 100
+#    min_border1 = outer_row[0] + sim_range * outer_row[0] / 100
+#    min_border2 = outer_row[1] - sim_range * outer_row[1] / 100
+#    for inner_indices, inner_row in groupedDf.iterrows():
+#        if outer_row[2] == inner_row[2]:
+#            if min_border1 < inner_row[0] < max_border1 and min_border2 < inner_row[1] < max_border2:
+#                groupedDf = groupedDf.drop(groupedDf.index[[inner_indices]])
+
+
+#print("shape: ", finalDf.shape)
+#print("shape: ", groupedDf.shape)
+#print(groupedDf.head())
 #
-#seq_cols = [pre_calc.kmer_list[i] for i in range(x.shape[1])]
-#seq_cols = [pre_calc.list_all_kmer_counts[i] for i in range(x.shape[1])]
-#normalised_kmers = pd.DataFrame(x, columns=seq_cols)
-#print("demo____________________")
-#print(normalised_kmers.head())
-#print("demo____________________")
-##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-##label fehlt für image
-##normalised_kmers = normalised_kmers.assign(label=['seq_one', 'seq_two'])
-#normalised_kmers = normalised_kmers.assign(label='seqs')
-#
-#pca_kmers = PCA(n_components=2)
-#principalComponents_kmers = pca_kmers.fit_transform(x)
-#print(principalComponents_kmers)
-#
-## create a DataFrame for PCA values
-#principal_kmers_Df = pd.DataFrame(data=principalComponents_kmers
-#             ,columns=['principal component 1', 'principal component 2'])
-#
-#print("-----------------df")
-#print(principal_kmers_Df.head())
-#print("-----------------df")
-#
-## make figure
-#fig = plt.figure()
-#plt.figure(figsize=(10, 10))
-#plt.xticks(fontsize=12)
-#plt.yticks(fontsize=14)
-#plt.xlabel('Principal Component - 1', fontsize=20)
-#plt.ylabel('Principal Component - 2', fontsize=20)
-#plt.title("Principal Component Analysis of kmer counts", fontsize=20)
+#fig = plt.figure(figsize=(12, 12))
+#ax = fig.add_subplot(1, 1, 1)
+#ax.set_xlabel('Principal Component 1', fontsize=15)
+#ax.set_ylabel('Principal Component 2', fontsize=15)
+#ax.set_title('2 component PCA', fontsize=20)
 #targets = ['seq_one', 'seq_two']
-##targets = [principalComponents_kmers[0], principalComponents_kmers[1]]
-#colors = ['r', 'g']
+#colors = ['r', 'b']
 #for target, color in zip(targets, colors):
-#    indicesToKeep = normalised_kmers['label'] == target
-#    plt.scatter(principal_kmers_Df.loc[indicesToKeep, 'principal component 1']
-#               , principal_kmers_Df.loc[indicesToKeep, 'principal component 2'], c=color, s=50)
+#    indicesToKeep = groupedDf['target'] == target
+#    ax.scatter(groupedDf.loc[indicesToKeep, 'principal component 1']
+#               , groupedDf.loc[indicesToKeep, 'principal component 2']
+#               , c=color
+#               , s=10
+#               , alpha=0.2)
+#ax.legend(targets)
+#ax.grid()
 #
-#plt.legend(targets, prop={'size': 15})
-#
-## TODO output figure
-#fig.savefig('plot.png')
+#fig.savefig('plot_less_points.png')
+
+
+
+
+#finalDf.sort_values(by=['target', 'principal component 1', 'principal component 2'], inplace=True)
+
+#print("________________________")
+#print(finalDf.head())
+#print(finalDf.tail())
+#print("________________________")
+
+#df = df.drop(df.index [ [ 0,2 ] ])    delete rows 1 and 3,
+#df = df.drop('Harry Porter')     delete row with entry
+
+# grouping df entries by removing them, if to similar to surrounding values
+# deleting by 'principal component 1' comparison
+
+
+
+# deleting by 'principal component 2' comparison
+#finalDf.sort_values(by=['target', 'principal component 2', 'principal component 1'], inplace=True)
 
