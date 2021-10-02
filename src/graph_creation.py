@@ -3,13 +3,13 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import scale
-from sklearn import model_selection
-from sklearn.model_selection import RepeatedKFold
-from sklearn.model_selection import train_test_split
+#from sklearn.preprocessing import scale
+#from sklearn import model_selection
+#from sklearn.model_selection import RepeatedKFold
+#from sklearn.model_selection import train_test_split
 from sklearn.decomposition import PCA
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
+#from sklearn.linear_model import LinearRegression
+#from sklearn.metrics import mean_squared_error
 from matplotlib import pyplot
 
 # imports intern
@@ -109,25 +109,18 @@ fig.savefig('plot_seq_two.png')
 bins = np.linspace(-10, 10, 100)
 
 fig, ax = pyplot.subplots()
-#indicesToKeep = finalDf['target'] == ['seq_one']
-#pyplot.hist(finalDf.loc[indicesToKeep, 'principal component 2'], bins, alpha=0.1, label='pca_2')
+# indicesToKeep = finalDf['target'] == ['seq_one']
+# pyplot.hist(finalDf.loc[indicesToKeep, 'principal component 2'], bins, alpha=0.1, label='pca_2')
 pyplot.hist(finalDf['principal component 1'], bins, color='red', alpha=0.1, label='pca_1')
-#targets = ['seq_two']
-#indicesToKeep = finalDf['target'] == ['seq_two']
-#pyplot.hist(finalDf.loc[indicesToKeep, 'principal component 2'], bins, alpha=0.1, label='pca_2')
+# targets = ['seq_two']
+# indicesToKeep = finalDf['target'] == ['seq_two']
+# pyplot.hist(finalDf.loc[indicesToKeep, 'principal component 2'], bins, alpha=0.1, label='pca_2')
 pyplot.hist(finalDf['principal component 2'], bins, color='blue', alpha=0.1, label='pca_2')
 pyplot.legend(loc='upper right')
 fig.savefig('hist_PCA_values.png')
 
 
-# making histogram for SD values values
-#pre_calc.dict_SD
-#fig, ax_SD = plt.subplots()
-#plt.hist(list(pre_calc.dict_SD.keys()),  [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], edgecolor='black')
-#fig.savefig('hist_SD_values.png')
-
-
-
+# grouping data points
 
 
 # combining points when +- 5% similarity
