@@ -1,12 +1,16 @@
 # imports extern
 
 # imports intern
-import  src.Sequence_pre_calculation as calc
+import sequence_pre_calculation as calc
+import graph_creation as graph
+import data_calculation as dat
 
 
 
 # start terminal output
 def use_terminal():
-    print("hello")
     #for i in calc.sim_matrix:
-    #    print('\t'.join(map(str, i)))
+    # for i in calc.count_matrix:
+    #     print('\t'.join(map(str, i)))
+    print("See output Graph x or Files yz for results")
+    # TODO output message with statistic
