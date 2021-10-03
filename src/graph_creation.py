@@ -45,9 +45,6 @@ principalDf = pd.DataFrame(data=principalComponents,
 
 finalDf = pd.concat([principalDf, kmer_dataset[['target']]], axis=1)
 
-print("________________________")
-print(finalDf.head())
-print("________________________")
 
 fig = plt.figure(figsize=(12, 12))
 ax = fig.add_subplot(1, 1, 1)
