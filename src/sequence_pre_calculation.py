@@ -38,13 +38,6 @@ k = 3
 for i in range(1, k + 1):
     kmer_list.extend([''.join(p) for p in itertools.product(bases, repeat=i)])
 
-# TODO:
-# pro seq
-# pro sub seq
-# Anz kmere x Anz subseqs
-# dict statt matrix
-# extra spalte damit usprungs sequ bekannt bleibt
-# => df hat
 
 # count k-mer occurrences in each sequence for each subsequence
 list_all_kmer_counts = np.zeros(((len(seq_one) + len(seq_two)), len(kmer_list)), int)
