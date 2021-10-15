@@ -19,63 +19,150 @@ print("________________________")
 # bar chart for test
 
 
+# sorting df after both pc columns
 grouped_Df_first_col = graph_creat.finalDf  # pd.DataFrame()
-grouped_Df_first_col['my index'] = range(1, len(grouped_Df_first_col) + 1)
+#grouped_Df_first_col['my index'] = range(1, len(grouped_Df_first_col) + 1)
 grouped_Df_second_col = graph_creat.finalDf  # pd.DataFrame()
-grouped_Df_second_col['my index'] = range(1, len(grouped_Df_second_col) + 1)
-
-
+#grouped_Df_second_col['my index'] = range(1, len(grouped_Df_second_col) + 1)
 grouped_Df_first_col.sort_values(by=['target', 'principal component 1', 'principal component 2'], inplace=True)
 grouped_Df_second_col.sort_values(by=['target', 'principal component 2', 'principal component 1'], inplace=True)
 
 
-# similarity range
-sim_range = 5  # 2.5  # ~ -+5%
+# getting min and max pca value
+min_df_val = 0
+max_df_val = 0
+
+if grouped_Df_first_col["principal component 1"].iloc[0] < grouped_Df_second_col["principal component 2"].iloc[0]:
+    min_df_val = grouped_Df_first_col["principal component 1"].iloc[0]
+else:
+    min_df_val = grouped_Df_second_col["principal component 2"].iloc[0]
+
+if grouped_Df_first_col["principal component 1"].iloc[-1] > grouped_Df_second_col["principal component 2"].iloc[-1]:
+    max_df_val = grouped_Df_first_col["principal component 1"].iloc[-1]
+else:
+    max_df_val = grouped_Df_second_col["principal component 2"].iloc[-1]
 
 
-# first try, collect my_index entries for groups
-def group_by_col(in_df, col_nr, sim_rng):
-    out_matrix = np.empty((0, 0))
-    add_list = []
-    comp_row = in_df.head(1)
-    max_border = comp_row[col_nr] + sim_rng * comp_row[col_nr] / 100
-    for index, row in in_df.iterrows():
-    #for row in range(1, in_df.shape[0]):
-        # if row[col_nr] <= max_border:
-        while row[col_nr] <= max_border:
-            for index2, row2 in in_df.iterrows():
-                add_list.append(row2[3])
-        out_matrix = np.append(out_matrix, add_list, axis=0)  # .__add__(add_list)
-        add_list.clear()
-        max_border = row2[col_nr] + sim_rng * row2[col_nr] / 100
-        # min_border = row[col_nr] - sim_rng * row[col_nr] / 100
-    return out_matrix
+# counting column-values in given value range
+#TODO make difference between seq1 and seq 2 focus
+def grouped_counting(df, col, val_range):
+    out_list = []
+    count = 0
+    min_val = min_df_val
+    for index, row in df.iterrows():
+        if row[col] < min_val:
+            count += 1
+        else:
+            out_list.append((str(min_val), count))
+            # out_list.extend((min_val, count))
+            # out_list.append(count)
+            min_val = row[col] + abs(row[col] * val_range)
+            count = 0
+    return out_list
 
 
-# grouping similar row/column values by custom index
-index_grouped_first = group_by_col(grouped_Df_first_col, 0, 5)
-index_grouped_second = group_by_col(grouped_Df_second_col, 1, 5)
+# range
+val_range = (abs(min_df_val) + max_df_val) / 400  # 500  # 2*500 values n > 1000 statistic problems
+
+print((abs(min_df_val)))
+print(max_df_val)
+print("val_range: ", val_range)
+
+list_pca1 = grouped_counting(grouped_Df_first_col, 'principal component 1', 0.1)  # val_range)
+list_pca2 = grouped_counting(grouped_Df_second_col, 'principal component 2', 0.1)  # val_range)
 
 
-# emptying sorted df's for RAM
-#grouped_Df_first_col = grouped_Df_first_col.iloc[0:0]
-#grouped_Df_second_col = grouped_Df_second_col.iloc[0:0]
+# make bar chart
+import matplotlib.pyplot as plt
+labels, ys = zip(*list_pca1)
+xs = np.arange(len(labels))
+width = 1
+plt.bar(xs, ys, width, align='center', alpha=0.2)
+
+labels, ys = zip(*list_pca2)
+xs = np.arange(len(labels))
+plt.bar(xs, ys, width, align='center', alpha=0.2)
+
+#plt.xticks(xs, labels, rotation=70) #Replace default x-ticks with xs, then replace xs with labels
+#plt.yticks(ys)
 
 
-# new df by selecting intersection of custom index
-keep_list = []
-keep_matrix = np.empty((0, 0))
-for outer_group in index_grouped_first:
-    for inner_group in index_grouped_second:
-        keep_list.append(outer_group.intersection(inner_group))
-        keep_matrix = np.append(keep_matrix, keep_list, axis=0)
-        keep_list.clear()
+#plt.bar(range(len(list_pca1)), [val[1] for val in list_pca1], align='center', alpha=0.2)
+#plt.bar(range(len(list_pca2)), [val[1] for val in list_pca2], align='center', alpha=0.2)
+#plt.xticks(range(len(list_pca1)), [val[0] for val in list_pca1])
+#plt.xticks(rotation=70)
+
+plt.savefig('barGroup.png')
 
 
+
+
+#grouped_Df_first_col = graph_creat.finalDf  # pd.DataFrame()
+#grouped_Df_first_col['my index'] = range(1, len(grouped_Df_first_col) + 1)
+#grouped_Df_second_col = graph_creat.finalDf  # pd.DataFrame()
+#grouped_Df_second_col['my index'] = range(1, len(grouped_Df_second_col) + 1)
+#
+##
+#grouped_Df_first_col.sort_values(by=['target', 'principal component 1', 'principal component 2'], inplace=True)
+###grouped_Df_second_col.sort_values(by=['target', 'principal component 2', 'principal component 1'], inplace=True)
+#
+#
+## similarity range
+#sim_range = 5  # 2.5  # ~ -+5%
+#
+#
+## first try, collect my_index entries for groups
+#def group_by_col(in_df, col_nr, sim_rng):
+##    out_matrix = np.empty((0, 0))
+#    add_list = []
+#    comp_row = in_df.head(1)
+#    max_border = comp_row[col_nr] + sim_rng * comp_row[col_nr] / 100
+#    for index, row in in_df.iterrows()#
+#    #for row in range(1, in_df.shape[0]):
+#        # if row[col_nr] <= max_border:
+#        while row[col_nr] <= max_border:
+#            for index2, row2 in in_df.iterrows():
+#                add_list.append(row2[3])
+#        out_matrix = np.append(out_matrix, add_list, axis=0)  # .__add__(add_list)
+#        add_list.clear()
+#        max_border = row2[col_nr] + sim_rng * row2[col_nr] / 100
+#        # min_border = row[col_nr] - sim_rng * row[col_nr] / 100
+#    return out_matrix
+#
+#
+### grouping similar row/column values by custom index
+##index_grouped_first = group_by_col(grouped_Df_first_col, 0, 5)
+##index_grouped_second = group_by_col(grouped_Df_second_col, 1, 5)
+#
+#
+## emptying sorted df's for RAM
+##grouped_Df_first_col = grouped_Df_first_col.iloc[0:0]
+##grouped_Df_second_col = grouped_Df_second_col.iloc[0:0]
+#
+#
+## new df by selecting intersection of custom index
+#keep_list = []
+#keep_matrix = np.empty((0, 0))
+#for outer_group in index_grouped_first:
+#    for inner_group in index_grouped_second:
+#        keep_list.append(outer_group.intersection(inner_group))
+#        keep_matrix = np.append(keep_matrix, keep_list, axis=0)
+#        keep_list.clear()
+#
+#
 # removing not needed row from df, keeping only first
-print(graph_creat.finalDf.shape)
+#print(graph_creat.finalDf.shape)
 
 # "drop df.row[my_index]" for all lists in keep_matrix except each first entry
+
+
+
+
+
+
+
+
+
 
 #grouped_final_Df = graph_creat.finalDf
 
