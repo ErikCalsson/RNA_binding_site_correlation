@@ -1,6 +1,7 @@
 # imports extern
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 # imports intern
 import sequence_pre_calculation as pre_calc
@@ -8,22 +9,14 @@ import graph_creation as graph_creat
 
 # TODO statistical calculation here
 
-print("________________________")
-print(graph_creat.finalDf.head())
-print("________________________")
-
-#TODO !!!!!!!!!!!!!!!
-# review code below, wrong attempt
-# automatic class creation for each column (X, Y axis separately)
-# normalizing each of the two on its own
-# bar chart for test
+#print("________________________")
+#print(graph_creat.finalDf.head())
+#print("________________________")
 
 
 # sorting df after both pc columns
-grouped_Df_first_col = graph_creat.finalDf  # pd.DataFrame()
-#grouped_Df_first_col['my index'] = range(1, len(grouped_Df_first_col) + 1)
-grouped_Df_second_col = graph_creat.finalDf  # pd.DataFrame()
-#grouped_Df_second_col['my index'] = range(1, len(grouped_Df_second_col) + 1)
+grouped_Df_first_col = graph_creat.finalDf
+grouped_Df_second_col = graph_creat.finalDf
 grouped_Df_first_col.sort_values(by=['target', 'principal component 1', 'principal component 2'], inplace=True)
 grouped_Df_second_col.sort_values(by=['target', 'principal component 2', 'principal component 1'], inplace=True)
 
@@ -43,45 +36,90 @@ else:
     max_df_val = grouped_Df_second_col["principal component 2"].iloc[-1]
 
 
-# counting column-values in given value range
-#TODO make difference between seq1 and seq 2 focus
-def grouped_counting(df, col, val_range):
-    out_list = []
-    count = 0
-    min_val = min_df_val
-    for index, row in df.iterrows():
-        if row[col] < min_val:
-            count += 1
-        else:
-            out_list.append((str(min_val), count))
-            # out_list.extend((min_val, count))
-            # out_list.append(count)
-            min_val = row[col] + abs(row[col] * val_range)
-            count = 0
-    return out_list
+# separating PC1 and PC2 datasets
+grouped_Df_first_col = grouped_Df_first_col[['principal component 1', 'target']]
+grouped_Df_second_col = grouped_Df_second_col[['principal component 2', 'target']]
 
 
-# range
-val_range = (abs(min_df_val) + max_df_val) / 400  # 500  # 2*500 values n > 1000 statistic problems
+# separating seq 1 and seq 2 in both PCs, then dropping target column
+df_first_s1 = grouped_Df_first_col.query('target == "seq_one"')
+df_first_s1 = df_first_s1.drop('target', 1)
+df_first_s2 = grouped_Df_first_col.query('target == "seq_two"')
+df_first_s2 = df_first_s2.drop('target', 1)
+df_second_s1 = grouped_Df_second_col.query('target == "seq_one"')
+df_second_s1 = df_second_s1.drop('target', 1)
+df_second_s2 = grouped_Df_second_col.query('target == "seq_two"')
+df_second_s2 = df_second_s2.drop('target', 1)
 
-print((abs(min_df_val)))
-print(max_df_val)
-print("val_range: ", val_range)
-
-list_pca1 = grouped_counting(grouped_Df_first_col, 'principal component 1', 0.1)  # val_range)
-list_pca2 = grouped_counting(grouped_Df_second_col, 'principal component 2', 0.1)  # val_range)
+#print("!!")
+#print(df_first_s1.head())
+#print("!!")
 
 
-# make bar chart
-import matplotlib.pyplot as plt
-labels, ys = zip(*list_pca1)
-xs = np.arange(len(labels))
-width = 1
-plt.bar(xs, ys, width, align='center', alpha=0.2)
+# grouping counts with cut. range of bins = 0.1 for
+# cut(PC1 seq 1) vs cut(PC1 seq 2) and same with PC2
+custom_bins = bins = np.arange(min_df_val, max_df_val + 0.1, 0.1)
+df_first_s1['grouped'] = pd.cut(x=df_first_s1['principal component 1'],
+                                bins=custom_bins)
+df_first_s2['grouped'] = pd.cut(x=df_first_s2['principal component 1'],
+                                bins=custom_bins)
+df_second_s1['grouped'] = pd.cut(x=df_second_s1['principal component 2'],
+                                 bins=custom_bins)
+df_second_s2['grouped'] = pd.cut(x=df_second_s2['principal component 2'],
+                                 bins=custom_bins)
 
-labels, ys = zip(*list_pca2)
-xs = np.arange(len(labels))
-plt.bar(xs, ys, width, align='center', alpha=0.2)
+# sorting after groups
+df_first_s1.sort_values('grouped')
+df_first_s2.sort_values('grouped')
+df_second_s1.sort_values('grouped')
+df_second_s2.sort_values('grouped')
+
+# count occurrences of each group and normalize them
+counted_first_s1 = df_first_s1['grouped'].value_counts(normalize=True).sort_index()
+counted_first_s2 = df_first_s2['grouped'].value_counts(normalize=True).sort_index()
+counted_second_s1 = df_second_s1['grouped'].value_counts(normalize=True).sort_index()
+counted_second_s2 = df_second_s2['grouped'].value_counts(normalize=True).sort_index()
+
+# turn Series into DataFrames
+df_counted_first_s1 = pd.DataFrame({'range': counted_first_s1.index, 'counts_col1_seq1': counted_first_s1.values})
+df_counted_first_s2 = pd.DataFrame({'range': counted_first_s2.index, 'counts_col1_seq2': counted_first_s2.values})
+df_counted_second_s1 = pd.DataFrame({'range': counted_second_s1.index, 'counts_col2_seq1': counted_second_s1.values})
+df_counted_second_s2 = pd.DataFrame({'range': counted_second_s2.index, 'counts_col2_seq2': counted_second_s2.values})
+
+# combine to single Dataframe
+df_counts_PC_1 = pd.merge(df_counted_first_s1, df_counted_first_s2)
+df_counts_PC_2 = pd.merge(df_counted_second_s1, df_counted_second_s2)
+df_merged_PCs = pd.merge(df_counts_PC_1, df_counts_PC_2)
+
+print("!!!!")
+print(df_counts_PC_1.head())
+
+#TODO
+# make combined bar chart
+# make statistics
+
+# bar chart for all
+#https://stackoverflow.com/questions/29498652/plot-bar-graph-from-pandas-dataframe
+ax = df_counts_PC_1[['counts_col1_seq1', 'counts_col1_seq2']].plot(kind='bar',
+                                                                   title="Grouped PC values",
+                                                                   figsize=(15, 10),
+                                                                   legend=True,
+                                                                   fontsize=12)
+ax.set_xlabel("range", fontsize=12)
+ax.set_ylabel("counts", fontsize=12)
+plt.bar
+# plt.show()
+
+
+#labels, ys = zip(*combined_df['col1_seq1'])
+#xs = np.arange(len(labels))
+#width = 1
+#plt.bar(xs, ys, width, align='center', alpha=0.2)
+#
+#labels, ys = zip(*combined_df['col1_seq2'])
+#xs = np.arange(len(labels))
+#plt.bar(xs, ys, width, align='center', alpha=0.2)
+#col2_seq1  col2_seq2
 
 #plt.xticks(xs, labels, rotation=70) #Replace default x-ticks with xs, then replace xs with labels
 #plt.yticks(ys)
@@ -92,98 +130,12 @@ plt.bar(xs, ys, width, align='center', alpha=0.2)
 #plt.xticks(range(len(list_pca1)), [val[0] for val in list_pca1])
 #plt.xticks(rotation=70)
 
+
+
 plt.savefig('barGroup.png')
 
 
+# stat. test!
 
 
-#grouped_Df_first_col = graph_creat.finalDf  # pd.DataFrame()
-#grouped_Df_first_col['my index'] = range(1, len(grouped_Df_first_col) + 1)
-#grouped_Df_second_col = graph_creat.finalDf  # pd.DataFrame()
-#grouped_Df_second_col['my index'] = range(1, len(grouped_Df_second_col) + 1)
-#
-##
-#grouped_Df_first_col.sort_values(by=['target', 'principal component 1', 'principal component 2'], inplace=True)
-###grouped_Df_second_col.sort_values(by=['target', 'principal component 2', 'principal component 1'], inplace=True)
-#
-#
-## similarity range
-#sim_range = 5  # 2.5  # ~ -+5%
-#
-#
-## first try, collect my_index entries for groups
-#def group_by_col(in_df, col_nr, sim_rng):
-##    out_matrix = np.empty((0, 0))
-#    add_list = []
-#    comp_row = in_df.head(1)
-#    max_border = comp_row[col_nr] + sim_rng * comp_row[col_nr] / 100
-#    for index, row in in_df.iterrows()#
-#    #for row in range(1, in_df.shape[0]):
-#        # if row[col_nr] <= max_border:
-#        while row[col_nr] <= max_border:
-#            for index2, row2 in in_df.iterrows():
-#                add_list.append(row2[3])
-#        out_matrix = np.append(out_matrix, add_list, axis=0)  # .__add__(add_list)
-#        add_list.clear()
-#        max_border = row2[col_nr] + sim_rng * row2[col_nr] / 100
-#        # min_border = row[col_nr] - sim_rng * row[col_nr] / 100
-#    return out_matrix
-#
-#
-### grouping similar row/column values by custom index
-##index_grouped_first = group_by_col(grouped_Df_first_col, 0, 5)
-##index_grouped_second = group_by_col(grouped_Df_second_col, 1, 5)
-#
-#
-## emptying sorted df's for RAM
-##grouped_Df_first_col = grouped_Df_first_col.iloc[0:0]
-##grouped_Df_second_col = grouped_Df_second_col.iloc[0:0]
-#
-#
-## new df by selecting intersection of custom index
-#keep_list = []
-#keep_matrix = np.empty((0, 0))
-#for outer_group in index_grouped_first:
-#    for inner_group in index_grouped_second:
-#        keep_list.append(outer_group.intersection(inner_group))
-#        keep_matrix = np.append(keep_matrix, keep_list, axis=0)
-#        keep_list.clear()
-#
-#
-# removing not needed row from df, keeping only first
-#print(graph_creat.finalDf.shape)
-
-# "drop df.row[my_index]" for all lists in keep_matrix except each first entry
-
-
-
-
-
-
-
-
-
-
-#grouped_final_Df = graph_creat.finalDf
-
-
-#max_len = finalDf.shape[0]
-#outer_indices = 1
-#inner_indices = 2
-#containing = 0
-
-#entry = finalDf.loc[0]
-#groupedDf = groupedDf.append([entry])
-
-#for outer_indices, outer_row in groupedDf.iterrows():
-#    max_border1 = outer_row[0] + sim_range * outer_row[0] / 100
-#    max_border2 = outer_row[1] - sim_range * outer_row[1] / 100
-#    min_border1 = outer_row[0] + sim_range * outer_row[0] / 100
-#    min_border2 = outer_row[1] - sim_range * outer_row[1] / 100
-#    for inner_indices, inner_row in groupedDf.iterrows():
-#        if outer_row[2] == inner_row[2]:
-#            if min_border1 < inner_row[0] < max_border1 and min_border2 < inner_row[1] < max_border2:
-#                groupedDf = groupedDf.drop(groupedDf.index[[inner_indices]])
-
-#print(">= 95     : %d , %d" % (ov95[0]/len(pre_calc.seq_one), ov95[1]/len(pre_calc.seq_two)))
 
