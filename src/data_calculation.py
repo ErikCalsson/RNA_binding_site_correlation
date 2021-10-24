@@ -102,7 +102,7 @@ print(df_counts_PC_1.head())
 #https://stackoverflow.com/questions/29498652/plot-bar-graph-from-pandas-dataframe
 ax = df_counts_PC_1[['counts_col1_seq1', 'counts_col1_seq2']].plot(kind='bar',
                                                                    title="Grouped PC values",
-                                                                   figsize=(15, 10),
+                                                                   figsize=(12, 12),
                                                                    legend=True,
                                                                    fontsize=12)
 ax.set_xlabel("range", fontsize=12)
