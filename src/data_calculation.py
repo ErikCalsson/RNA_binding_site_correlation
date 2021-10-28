@@ -109,31 +109,18 @@ ax = df_counts_PC_1[['counts_col1_seq1', 'counts_col1_seq2']].plot(kind='bar',
 ax.set_xlabel("range", fontsize=12)
 ax.set_ylabel("counts", fontsize=12)
 plt.bar
-# plt.show()
+plt.savefig('barGroupPC1.png')
 
-
-#labels, ys = zip(*combined_df['col1_seq1'])
-#xs = np.arange(len(labels))
-#width = 1
-#plt.bar(xs, ys, width, align='center', alpha=0.2)
-#
-#labels, ys = zip(*combined_df['col1_seq2'])
-#xs = np.arange(len(labels))
-#plt.bar(xs, ys, width, align='center', alpha=0.2)
-#col2_seq1  col2_seq2
-
-#plt.xticks(xs, labels, rotation=70) #Replace default x-ticks with xs, then replace xs with labels
-#plt.yticks(ys)
-
-
-#plt.bar(range(len(list_pca1)), [val[1] for val in list_pca1], align='center', alpha=0.2)
-#plt.bar(range(len(list_pca2)), [val[1] for val in list_pca2], align='center', alpha=0.2)
-#plt.xticks(range(len(list_pca1)), [val[0] for val in list_pca1])
-#plt.xticks(rotation=70)
-
-
-
-plt.savefig('barGroup.png')
+ax = df_counts_PC_2[['counts_col2_seq1', 'counts_col2_seq2']].plot(kind='bar',
+                                                                   title="Grouped PC values",
+                                                                   figsize=(10, 12),
+                                                                   legend=True,
+                                                                   fontsize=12,
+                                                                   alpha=0.3)
+ax.set_xlabel("range", fontsize=12)
+ax.set_ylabel("counts", fontsize=12)
+plt.bar
+plt.savefig('barGroupPC2.png')
 
 
 # stat. test!
