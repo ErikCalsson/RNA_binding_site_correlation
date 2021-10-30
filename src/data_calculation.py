@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import ttest_ind
 
 # imports intern
 import sequence_pre_calculation as pre_calc
@@ -75,10 +76,10 @@ df_second_s1.sort_values('grouped')
 df_second_s2.sort_values('grouped')
 
 # count occurrences of each group and normalize them
-counted_first_s1 = df_first_s1['grouped'].value_counts(normalize=True).sort_index()
-counted_first_s2 = df_first_s2['grouped'].value_counts(normalize=True).sort_index()
-counted_second_s1 = df_second_s1['grouped'].value_counts(normalize=True).sort_index()
-counted_second_s2 = df_second_s2['grouped'].value_counts(normalize=True).sort_index()
+counted_first_s1 = df_first_s1['grouped'].value_counts(normalize=False).sort_index()
+counted_first_s2 = df_first_s2['grouped'].value_counts(normalize=False).sort_index()
+counted_second_s1 = df_second_s1['grouped'].value_counts(normalize=False).sort_index()
+counted_second_s2 = df_second_s2['grouped'].value_counts(normalize=False).sort_index()
 
 # turn Series into DataFrames
 df_counted_first_s1 = pd.DataFrame({'range': counted_first_s1.index, 'counts_col1_seq1': counted_first_s1.values})
@@ -94,9 +95,6 @@ df_merged_PCs = pd.merge(df_counts_PC_1, df_counts_PC_2)
 print("!!!!")
 print(df_counts_PC_1.head())
 
-#TODO
-# make combined bar chart
-# make statistics
 
 # bar chart for all
 #https://stackoverflow.com/questions/29498652/plot-bar-graph-from-pandas-dataframe
@@ -123,7 +121,15 @@ plt.bar
 plt.savefig('barGroupPC2.png')
 
 
-# stat. test!
+#TODO stat. test!
 
+
+# perform independent two sided t test
+result_PC_1 = ttest_ind(df_counts_PC_1['counts_col1_seq1'], df_counts_PC_1['counts_col1_seq2'], equal_var=False)
+result_PC_2 = ttest_ind(df_counts_PC_2['counts_col2_seq1'], df_counts_PC_2['counts_col2_seq2'], equal_var=False)
+
+print('test:')
+print(result_PC_1)
+print(result_PC_2)
 
 
