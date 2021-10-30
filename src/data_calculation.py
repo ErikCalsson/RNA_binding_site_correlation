@@ -86,22 +86,20 @@ df_merged_PCs = pd.merge(df_counts_PC_1, df_counts_PC_2)
 # bar chart for all
 #https://stackoverflow.com/questions/29498652/plot-bar-graph-from-pandas-dataframe
 ax = df_counts_PC_1[['counts_col1_seq1', 'counts_col1_seq2']].plot(kind='bar',
-                                                                   title="Grouped PC values",
-                                                                   figsize=(10, 12),
+                                                                   figsize=(16, 10),
                                                                    legend=True,
                                                                    fontsize=12,
-                                                                   alpha=0.3)
+                                                                   alpha=0.6)
 ax.set_xlabel("range", fontsize=12)
 ax.set_ylabel("counts", fontsize=12)
 plt.bar
 plt.savefig('barGroupPC1.png')
 
 ax = df_counts_PC_2[['counts_col2_seq1', 'counts_col2_seq2']].plot(kind='bar',
-                                                                   title="Grouped PC values",
-                                                                   figsize=(10, 12),
+                                                                   figsize=(16, 10),
                                                                    legend=True,
                                                                    fontsize=12,
-                                                                   alpha=0.3)
+                                                                   alpha=0.6)
 ax.set_xlabel("range", fontsize=12)
 ax.set_ylabel("counts", fontsize=12)
 plt.bar
