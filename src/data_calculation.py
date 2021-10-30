@@ -8,12 +8,6 @@ from scipy.stats import ttest_ind
 import sequence_pre_calculation as pre_calc
 import graph_creation as graph_creat
 
-# TODO statistical calculation here
-
-#print("________________________")
-#print(graph_creat.finalDf.head())
-#print("________________________")
-
 
 # sorting df after both pc columns
 grouped_Df_first_col = graph_creat.finalDf
@@ -52,10 +46,6 @@ df_second_s1 = df_second_s1.drop('target', 1)
 df_second_s2 = grouped_Df_second_col.query('target == "seq_two"')
 df_second_s2 = df_second_s2.drop('target', 1)
 
-#print("!!")
-#print(df_first_s1.head())
-#print("!!")
-
 
 # grouping counts with cut. range of bins = 0.1 for
 # cut(PC1 seq 1) vs cut(PC1 seq 2) and same with PC2
@@ -92,9 +82,6 @@ df_counts_PC_1 = pd.merge(df_counted_first_s1, df_counted_first_s2)
 df_counts_PC_2 = pd.merge(df_counted_second_s1, df_counted_second_s2)
 df_merged_PCs = pd.merge(df_counts_PC_1, df_counts_PC_2)
 
-print("!!!!")
-print(df_counts_PC_1.head())
-
 
 # bar chart for all
 #https://stackoverflow.com/questions/29498652/plot-bar-graph-from-pandas-dataframe
@@ -121,9 +108,6 @@ plt.bar
 plt.savefig('barGroupPC2.png')
 
 
-#TODO stat. test!
-
-
 # perform independent two sided t test
 result_PC_1 = ttest_ind(df_counts_PC_1['counts_col1_seq1'], df_counts_PC_1['counts_col1_seq2'], equal_var=False)
 result_PC_2 = ttest_ind(df_counts_PC_2['counts_col2_seq1'], df_counts_PC_2['counts_col2_seq2'], equal_var=False)
@@ -131,5 +115,12 @@ result_PC_2 = ttest_ind(df_counts_PC_2['counts_col2_seq1'], df_counts_PC_2['coun
 print('test:')
 print(result_PC_1)
 print(result_PC_2)
+
+#TODO
+# interpret results along following:
+
+#1%  t>0.995
+#5%  t>0.975
+#10% t>0.95
 
 
