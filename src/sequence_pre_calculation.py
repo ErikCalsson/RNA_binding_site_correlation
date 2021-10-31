@@ -6,7 +6,8 @@ import numpy as np
 # import src.file_reader as file
 import file_reader as file
 # import src.argument_parser as pars
-import argument_parser as pars
+# import argument_parser as pars
+
 
 # BedTools .getfasta for extracting sequence
 # https://bedtools.readthedocs.io/en/latest/content/tools/getfasta.html
@@ -25,15 +26,10 @@ in_file.close()
 
 # k-mer Lists calculation
 
-# k-mer size
-ksize = 3
-if pars.args.ksize is not None:
-    ksize = int(pars.args.ksize)
-
-
 # genrate k-mer list for PCA
 bases = ['A', 'T', 'G', 'C']
 kmer_list = []
+# k-mer size
 k = 3
 for i in range(1, k + 1):
     kmer_list.extend([''.join(p) for p in itertools.product(bases, repeat=i)])
