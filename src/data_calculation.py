@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import ttest_ind
 
 # imports intern
-import sequence_pre_calculation as pre_calc
+# import sequence_pre_calculation as pre_calc
 import graph_creation as graph_creat
 
 
@@ -84,7 +84,7 @@ df_merged_PCs = pd.merge(df_counts_PC_1, df_counts_PC_2)
 
 
 # bar chart for all
-#https://stackoverflow.com/questions/29498652/plot-bar-graph-from-pandas-dataframe
+# https://stackoverflow.com/questions/29498652/plot-bar-graph-from-pandas-dataframe
 ax = df_counts_PC_1[['counts_col1_seq1', 'counts_col1_seq2']].plot(kind='bar',
                                                                    figsize=(16, 10),
                                                                    legend=True,
@@ -109,16 +109,5 @@ plt.savefig('barGroupPC2.png')
 # perform independent two sided t test
 result_PC_1 = ttest_ind(df_counts_PC_1['counts_col1_seq1'], df_counts_PC_1['counts_col1_seq2'], equal_var=False)
 result_PC_2 = ttest_ind(df_counts_PC_2['counts_col2_seq1'], df_counts_PC_2['counts_col2_seq2'], equal_var=False)
-
-print('test:')
-print(result_PC_1)
-print(result_PC_2)
-
-#TODO
-# interpret results along following:
-
-#1%  t>0.995
-#5%  t>0.975
-#10% t>0.95
 
 
